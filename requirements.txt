@@ -1,0 +1,5 @@
+wheel==0.22.0
+BeautifulSoup4
+requests
+selenium
+django
