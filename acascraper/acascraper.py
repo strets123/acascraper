@@ -65,7 +65,9 @@ class ResearchGateScraper(AcaScraper):
 
         topics = soup.findAll("a",class_="keyword-list-token-text")
         parsed["topics"] = [topic.string.strip() for topic in topics]
-
+        profile_image = soup.find("img" ,{"title" :parsed["name"]}).get("src")
+        if "profile_default" not in profile_image:
+            parsed["profile_image"] = profile_image
         return parsed
 
 
@@ -75,9 +77,9 @@ class AcademiaEduScraper(AcaScraper):
         soup = self.get_js_soup(profile_url)
         parsed = {}
         parsed["name"] = soup.find("h1").string.strip()
-        stats = lis=soup.findAll("div",class_="count")
+        stats = soup.findAll("div",class_="count")
         print stats
-        labels = lis=soup.findAll("div",class_="label")[0:len(stats)]
+        labels = soup.findAll("div",class_="label")[0:len(stats)]
 
         for index, label in enumerate(labels):
             if label.string:
@@ -94,4 +96,36 @@ class AcademiaEduScraper(AcaScraper):
             elif "Department" in link.get("href", ""):
                 parsed["department"] = link.string.strip()
                 break
+        profile_image = soup.find("img" ,{"id" :"profile_photo"}).get("src")
+        if "no pattern was found"  not in profile_image:
+            parsed["profile_image"] = profile_image
+
+        return parsed
+
+
+
+class MendeleyScraper(AcaScraper):
+    def get_simple_profile(self,profile_url):
+        soup = self.get_soup(profile_url)
+        parsed = {}
+        parsed["name"] = soup.find("h1").string.strip()
+        total_journals = 0
+        journals_total = soup.find("a",{"title" :"Show Publication"})
+        if journals_total:
+            total_journals= journals_total.string
+            print total_journals
+            total_journals =total_journals.split("(")[1].split(")")[0]
+            total_journals = num(total_journals)
+
+        topic_div = soup.find("a", {"name" :"research_interests"}).next_element.next_element
+        topics = str(topic_div.string)
+        if topics != "No research interests added yet.":
+            parsed["topics"] = topics.split(",")
+        else:
+            parsed["topics"] = []
+        parsed["stats"] = {"publications" : total_journals}
+
+        profile_image = soup.find("img" ,{"class" :"photo-full"}).get("src")
+        if "awaiting"  not in profile_image:
+            parsed["profile_image"] = profile_image
         return parsed

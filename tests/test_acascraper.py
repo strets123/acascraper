@@ -31,6 +31,18 @@ class TestAcascraper(unittest.TestCase):
         data = parser.get_simple_profile(url)
         print data
 
+    def test_get_empty_profile_mendeley(self):
+        url = "http://www.mendeley.com/profiles/a-stret/"
+        parser = acascraper.MendeleyScraper()
+        data = parser.get_simple_profile(url)
+        print data
+
+
+    def test_get_simple_profile_mendeley(self):
+        url = "http://www.mendeley.com/profiles/leigh-graham/"
+        parser = acascraper.MendeleyScraper()
+        data = parser.get_simple_profile(url)
+        print data
 
 
     def tearDown(self):
